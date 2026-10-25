@@ -89,6 +89,21 @@ function readTargets(port, signal) {
   });
 }
 
+async function readTargetsWithRetry(port, signal, maxWaitMs = 30000) {
+  const deadline = Date.now() + maxWaitMs;
+  let lastError;
+  while (Date.now() < deadline) {
+    signal?.throwIfAborted();
+    try { return await readTargets(port, signal); }
+    catch (error) {
+      lastError = error;
+      if (Date.now() >= deadline) break;
+      await delay(500, undefined, { signal });
+    }
+  }
+  throw lastError || new Error('Simulator debug endpoint did not become ready.');
+}
+
 class CdpClient {
   constructor(socket, timeoutMs = 10000) {
     this.socket = socket;
@@ -333,7 +348,7 @@ async function main(args = process.argv.slice(2)) {
   const disconnect = () => { if (client) void client.close(); };
   abort.signal.addEventListener('abort', disconnect, { once: true });
   try {
-    const targets = await readTargets(port, abort.signal);
+    const targets = await readTargetsWithRetry(port, abort.signal);
     const matching = targets.filter(target => target.type === 'page' && isOwnPage(target.url, appPath));
     if (matching.length !== 1) throw new Error('Expected exactly one page for this repository staged app. QA will not attach to another app or choose an ambiguous target.');
     const WebSocket = require('ws');
@@ -356,4 +371,4 @@ async function main(args = process.argv.slice(2)) {
 
 if (require.main === module) main().catch(error => { console.error(error.name === 'AbortError' ? 'Simulator QA cancelled.' : error.message); process.exitCode = 1; });
 
-module.exports = { parseArguments, validateSession, isOwnPage, debuggerUrl, readTargets, CdpClient, ownedExpression, sampleExpression, runChecks, runUiChecks, writeReport, main };
+module.exports = { parseArguments, validateSession, isOwnPage, debuggerUrl, readTargets, readTargetsWithRetry, CdpClient, ownedExpression, sampleExpression, runChecks, runUiChecks, writeReport, main };

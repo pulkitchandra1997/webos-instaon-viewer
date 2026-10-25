@@ -52,7 +52,7 @@ The launcher does not discover, inspect, install on, or contact a physical TV. I
 
 ## QA of this repository's simulator
 
-After launching with `--debug`, enabling the service, and allowing initial feeds to load:
+After launching with `--debug`, enabling the service, and allowing initial feeds to load. QA waits up to 30 seconds for the fresh local CDP endpoint during simulator startup:
 
 ```powershell
 npm run qa:simulator
