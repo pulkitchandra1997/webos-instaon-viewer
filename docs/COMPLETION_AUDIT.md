@@ -6,7 +6,7 @@ This audit records what was implemented and what remains externally gated. It is
 | --- | --- | --- |
 | P0-01 diagnostics | Implemented in source | `src/diagnostics.js` measures receipt, replacement, queue depth, decode duration, and presentation latency; offline tests pass. Simulator media sampling is prepared but needs service registration and authorized feeds. |
 | P0-02 recovery | Baseline verified | Engine/bridge tests cover disconnects, malformed input, decoder reset, keyframe recovery, stale channels, cancellation, retry backoff, and cleanup. A live soak remains unverified. |
-| P0-03 throughput | Measurement-ready | Shared decoder, bounded backpressure, persistent surfaces, and diagnostics exist. Before/after optimization requires a valid 10-camera media session and must not change recorder settings. |
+| P0-03 throughput | Fixture baseline ready | `npm run report:fixture` compares synthetic 4/8/10/16 SD walls and single-camera HD using the diagnostics counters. It is not a TV, recorder, cloud, FPS, or end-to-end latency result; live optimization still requires a valid media session. |
 | P0-04 timing | Not complete | The decoder explicitly reports raw-Annex-B timestamp mapping unavailable. RTP/RTCP sender-report mapping requires protocol evidence and decoded-frame association. |
 | P1-01 configuration | Baseline verified | Schema validation, placeholder rejection, no-overwrite configure, redacted errors, service-side secrets, and public-profile tests pass. |
 | P1-02 profiles | Implemented | Version-one non-secret validation, migration, redacted export, UI selection, local profile-ID persistence, labels, ordering, layout, fit, and ratio application are covered by offline tests. Recorder credentials remain outside profiles. |

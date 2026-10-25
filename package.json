@@ -12,6 +12,7 @@
     "package": "node tools/package.cjs",
     "simulator": "node tools/simulator.cjs",
     "qa:simulator": "node tools/simulator-qa.cjs",
+    "report:fixture": "node tools/fixture-report.cjs",
     "privacy": "node tools/privacy.cjs",
     "privacy:history": "node tools/privacy.cjs --history"
   },
