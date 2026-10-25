@@ -308,11 +308,12 @@ async function runUiChecks(evaluate, config, options, signal) {
     }
     throw new Error('Timed out waiting for simulator UI controls.');
   };
-  await waitFor(`!!(document.querySelector('.tile')&&document.getElementById('grid')&&document.getElementById('ratio')&&document.getElementById('fit')&&document.getElementById('toggle')&&document.getElementById('profile'))`);
-  const initial = await evaluate(`({view:Number(document.getElementById('grid').dataset.view),visible:Array.from(document.querySelectorAll('.tile')).filter(t=>!t.hidden).length,profileOptions:document.getElementById('profile').options.length,overflow:document.documentElement.scrollWidth>innerWidth||document.documentElement.scrollHeight>innerHeight})`);
+  await waitFor(`!!(document.querySelector('.tile')&&document.getElementById('grid')&&document.getElementById('ratio')&&document.getElementById('fit')&&document.getElementById('toggle')&&document.getElementById('profile')&&document.getElementById('capabilities'))`);
+  const initial = await evaluate(`({view:Number(document.getElementById('grid').dataset.view),visible:Array.from(document.querySelectorAll('.tile')).filter(t=>!t.hidden).length,profileOptions:document.getElementById('profile').options.length,capabilities:document.getElementById('capabilities').textContent,overflow:document.documentElement.scrollWidth>innerWidth||document.documentElement.scrollHeight>innerHeight})`);
   assert.equal(initial.view, config.viewer.defaultView, 'UI-only launch must use configured default layout');
   assert.equal(initial.visible, config.viewer.defaultView, 'UI-only launch must show the configured layout count');
   assert.equal(initial.overflow, false, 'UI-only launch must fit the simulator viewport');
+  assert(initial.capabilities.includes('Optional controls unavailable'), 'UI must explain unavailable optional controls');
   const layouts=[];
   for (const count of [4,8,10,16]) {
     await evaluate(`document.querySelector('button[data-view="${count}"]').click()`);
