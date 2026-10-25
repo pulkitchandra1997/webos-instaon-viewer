@@ -107,6 +107,7 @@ Packages can contain private configuration and must not be uploaded automaticall
 
 - [Stable v0.4.2 baseline and limitations](docs/STABLE_BASELINE.md)
 - [Current LLM handoff v2 — pending tasks](docs/LLM_HANDOFF_V2.md)
+- [Roadmap completion audit and external blockers](docs/COMPLETION_AUDIT.md)
 - [Original handoff and preserved baseline](docs/LLM_HANDOFF.md)
 - [Architecture and component ownership](docs/ARCHITECTURE.md)
 - [Feature and activity roadmap](docs/ROADMAP.md)

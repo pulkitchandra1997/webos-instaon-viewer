@@ -7,6 +7,8 @@
 
 This is the current continuation file for the next LLM. The older [LLM_HANDOFF.md](LLM_HANDOFF.md) remains as the original baseline record; use this v2 file for pending work.
 
+For the current evidence-based status, read the [completion audit](COMPLETION_AUDIT.md).
+
 ## Read first
 
 Read these files before changing code:
