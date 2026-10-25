@@ -40,9 +40,9 @@ Read these files before changing code:
 
 All items below are **PENDING** unless a future handoff records evidence and acceptance results.
 
-| ID | Priority | Task | Acceptance evidence |
+| ID | Priority | Status | Task | Acceptance evidence |
 | --- | --- | --- | --- |
-| P0-01 | High | Add repeatable per-camera latency, dropped-frame, decode-time, and queue-depth measurements using offline fixtures and authorized simulator sessions. | Tests plus a dated report with method, samples, and limits; no private footage committed. |
+| P0-01 | High | In progress | Add repeatable per-camera latency, dropped-frame, decode-time, and queue-depth measurements using offline fixtures and authorized simulator sessions. | Focused/offline tests pass; simulator media report remains pending service registration and authorized feeds. |
 | P0-02 | High | Improve interruption recovery for cloud disconnects, malformed packets, decoder reset, and stalled cameras. | Deterministic fault-injection tests and a simulator soak result. |
 | P0-03 | High | Measure and reduce wall-view decode load without changing recorder settings. | Before/after metrics for 10-camera SD wall and single-camera HD; no unsupported performance claim. |
 | P0-04 | High | Specify timestamp alignment and presentation policy. | Documented clock assumptions, fallback behavior, and a test proving the UI does not falsely claim synchronized capture. |

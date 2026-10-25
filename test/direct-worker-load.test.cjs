@@ -82,6 +82,7 @@ test('source worker resolves packaged WASM and measures decode duration',()=>{
   h.send({type:'select',channels:[1]});h.connect();h.deliver(1);
   const m=h.frames()[0];assert(m);
   assert(Number.isFinite(m.decodeMs)&&m.decodeMs>=0&&m.decodeMs<1000);
+  assert(Number.isFinite(m.sourceSentAt)&&m.sourceSentAt>0,'Decoded frames must retain the bridge send timestamp for presentation-latency measurement');
 });
 test('ten-channel flood emits at most one frame each until painted',()=>{
   const h=harness();h.send({type:'select',channels:[1,2,3,4,5,6,7,8,9,10]});const s=h.connect();

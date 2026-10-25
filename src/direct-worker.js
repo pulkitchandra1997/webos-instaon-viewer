@@ -64,7 +64,7 @@ function receiveFrame(bytes,source){
     var decodeStart=Date.now(),frame=decoder.decode(channel,payload);healthy.add(channel);
     if(frame){
       painting.set(channel,source);
-      postMessage({type:'frame',channel:channel,width:frame.width,height:frame.height,sar:frame.sampleAspectRatio,colour:frame.colour,decodeMs:Date.now()-decodeStart,sequence:frame.sequence,data:frame.data},[frame.data.buffer]);
+      postMessage({type:'frame',channel:channel,width:frame.width,height:frame.height,sar:frame.sampleAspectRatio,colour:frame.colour,decodeMs:Date.now()-decodeStart,sourceSentAt:view.getFloat64(12,true),sequence:frame.sequence,data:frame.data},[frame.data.buffer]);
       emitted=true;
     }
   }catch(error){painting.delete(channel);awaitingKey.add(channel);healthy.delete(channel);reportError(channel,error);}

@@ -4,7 +4,9 @@
   var profile=window.VIEWER_PROFILE||{},cameraCount=Number.isInteger(profile.cameraCount)&&profile.cameraCount>=1&&profile.cameraCount<=10?profile.cameraCount:10;
   var tiles=[],view=[4,8,10,16].indexOf(profile.defaultView)>=0?profile.defaultView:10,expanded=0,worker,subscription,ready=false,paused=false,mediaUrl='',retry,closing=false,background=false,epoch=0,startedAt=0,lastFrameAt=0;
   var settings={fit:'fit',ratio:'auto'};try{Object.assign(settings,JSON.parse(localStorage.getItem('direct-settings')||'{}'));}catch(error){}
-  var metrics={received:0,painted:0,maxProcessingMs:0,wasmBytes:0,presentationBatches:0,captureSync:'unverified'};window.cameraDiagnostics={metrics:metrics,channels:tiles};
+  var diagnostics=window.CameraDiagnostics&&window.CameraDiagnostics.create?window.CameraDiagnostics.create(Date.now):null;
+  var metrics=diagnostics?diagnostics.metrics:{received:0,painted:0,replaced:0,maxQueueDepth:0,maxProcessingMs:0,wasmBytes:0,presentationBatches:0,captureSync:'unverified'};
+  window.cameraDiagnostics={metrics:metrics,channels:tiles,measurements:diagnostics?function(){return diagnostics.snapshot();}:function(){return {aggregate:metrics,channels:{}};}};
   var pendingPaints=new Map(),paintHandle=null;
   function clearPresentation(){if(paintHandle!==null)cancelAnimationFrame(paintHandle);paintHandle=null;pendingPaints.clear();}
   function selected(){return expanded?[expanded]:Array.from({length:Math.min(view,cameraCount)},function(_,i){return i+1;});}
@@ -58,22 +60,24 @@
       if(m.type==='channel-error'){metrics.lastChannelFailure=m.message;tiles[m.channel-1].health.textContent='Waiting for keyframe';}
       if(m.type==='socket-close')fail('Media link closed');
       if(m.type==='frame'){
-        pendingPaints.set(m.channel,m);
+        if(pendingPaints.has(m.channel)){if(diagnostics)diagnostics.replaced(m.channel);else metrics.replaced=(metrics.replaced||0)+1;}
+        pendingPaints.set(m.channel,m);if(diagnostics)diagnostics.received(m,pendingPaints.size);else{metrics.received++;metrics.maxQueueDepth=Math.max(metrics.maxQueueDepth,pendingPaints.size);}
         if(paintHandle!==null)return;
         paintHandle=requestAnimationFrame(function(){
           paintHandle=null;var batch=Array.from(pendingPaints.values());pendingPaints.clear();metrics.presentationBatches++;
           batch.forEach(function(m){
         if(current!==epoch)return;
-        metrics.received++;var t=tiles[m.channel-1];if(!t||selected().indexOf(m.channel)===-1){worker.postMessage({type:'painted',channel:m.channel});return;}
+        var t=tiles[m.channel-1];if(!t||selected().indexOf(m.channel)===-1){worker.postMessage({type:'painted',channel:m.channel});return;}
         try{
           if(!t.renderer)t.renderer=new CameraRenderer(t.canvas);
-          t.canvas.hidden=false;t.renderer.paint(m);t.frame=m;t.lastPaint=Date.now();lastFrameAt=t.lastPaint;t.count++;fit(t);metrics.painted++;
+          t.canvas.hidden=false;t.renderer.paint(m);t.frame=m;t.lastPaint=Date.now();lastFrameAt=t.lastPaint;t.count++;fit(t);if(diagnostics)diagnostics.painted(m,t.lastPaint);else metrics.painted++;
           var delay=m.decodeMs;metrics.maxProcessingMs=Math.max(metrics.maxProcessingMs,delay);
           t.health.textContent=t.count+' frames';
           var active=selected(),live=active.filter(function(channel){return Date.now()-tiles[channel-1].lastPaint<3000;}).length;
           status.textContent=live===active.length?'LIVE':'PARTIAL';
           message.textContent=live+'/'+active.length+' channels painting · '+(expanded?'HD':'SD')+' · direct cloud connection · no gateway';
-          summary.textContent='View '+view+' · decode '+delay+' ms (not end-to-end latency) · shared decoder '+Math.round(metrics.wasmBytes/1048576)+' MiB · Select a camera to enlarge';
+          var measured=diagnostics&&diagnostics.snapshot().aggregate,latency=measured&&measured.latencySamples?Math.round(measured.totalLatencyMs/measured.latencySamples)+' ms avg':'n/a';
+          summary.textContent='View '+view+' · decode '+delay+' ms · presentation latency '+latency+' · shared decoder '+Math.round(metrics.wasmBytes/1048576)+' MiB · Select a camera to enlarge';
         }catch(error){if(t.renderer)t.renderer.close();t.renderer=null;var replacement=document.createElement('canvas');t.canvas.replaceWith(replacement);t.canvas=replacement;fail(error.message);}
         finally{if(worker&&current===epoch)worker.postMessage({type:'painted',channel:m.channel});}
           });

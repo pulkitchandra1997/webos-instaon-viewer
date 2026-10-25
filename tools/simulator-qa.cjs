@@ -180,7 +180,7 @@ function ownedExpression(expression, session) {
 }
 
 function sampleExpression(count) {
-  return `({at:Date.now(),channels:window.cameraDiagnostics.channels.slice(0,${count}).map(t=>({channel:t.channel,frames:t.count,lastPaint:t.lastPaint})),wasmBytes:Number(window.cameraDiagnostics.metrics.wasmBytes)||0,painted:Number(window.cameraDiagnostics.metrics.painted)||0,jsHeap:performance.memory?performance.memory.usedJSHeapSize:null})`;
+  return `({at:Date.now(),channels:window.cameraDiagnostics.channels.slice(0,${count}).map(t=>({channel:t.channel,frames:t.count,lastPaint:t.lastPaint})),measurements:window.cameraDiagnostics.measurements?window.cameraDiagnostics.measurements().aggregate:null,wasmBytes:Number(window.cameraDiagnostics.metrics.wasmBytes)||0,painted:Number(window.cameraDiagnostics.metrics.painted)||0,jsHeap:performance.memory?performance.memory.usedJSHeapSize:null})`;
 }
 
 async function runChecks(evaluate, config, options, signal) {
