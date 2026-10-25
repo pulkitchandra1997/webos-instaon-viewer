@@ -24,3 +24,5 @@ Use an active Node.js LTS release (22 or newer for developer tools), npm, Git an
 The generated `build/direct/service/credentials.private.json` is derived output, **not** a second manually maintained config. The frontend receives only camera count/layout in `viewer-profile.js`. Cloud transport and recorder login run inside the on-device service. Private config and generated outputs are plaintext on your machine/device; `.gitignore` is not encryption. Use a dedicated read-only recorder account when supported and protect local filesystem access.
 
 No physical-TV installer or automatic network discovery is included. A future physical deployment requires a separate explicit request, a reviewed package, and LG Developer Mode provisioning. Keep `television.enabled` false during simulator-only work.
+
+Rebuilds use fresh staging and replace only this repository's generated `build/direct` output after success; obsolete staged files do not carry into new IPKs. Failure preserves the last completed build. Packaging disables automatic JavaScript minification so the audited decoder bytes remain intact.

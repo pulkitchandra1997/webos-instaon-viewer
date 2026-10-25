@@ -70,6 +70,7 @@ Build and packaging need the private prerequisites above. A generated package ma
 ## Documentation
 
 - [Stable v0.4.2 baseline and limitations](docs/STABLE_BASELINE.md)
+- [Fresh source/export verification and unrun checks](docs/VALIDATION.md)
 - [Architecture and component ownership](docs/ARCHITECTURE.md)
 - [Feature and activity roadmap](docs/ROADMAP.md)
 - [Next-LLM handoff and copy/paste prompt](docs/LLM_HANDOFF.md)

@@ -6,7 +6,7 @@ function git(args){const r=cp.spawnSync('git',args,{cwd:tmp,encoding:'utf8'});as
 try{
   git(['init','-q']);git(['config','user.name','Fixture Contributor']);git(['config','user.email','fixture@example.invalid']);
   fs.writeFileSync(path.join(tmp,'.gitignore'),'config.local.json\n');
-  fs.writeFileSync(path.join(tmp,'config.local.json'),JSON.stringify({recorder:{password:secret}}));
+  fs.writeFileSync(path.join(tmp,'config.local.json'),'\uFEFF'+JSON.stringify({recorder:{password:secret}}));
   fs.writeFileSync(path.join(tmp,'notes.md'),secret);
   git(['add','.']);assert(inspect(tmp,false).some(f=>f.rule==='private-value'));
   git(['commit','-qm','Fixture with sensitive content']);

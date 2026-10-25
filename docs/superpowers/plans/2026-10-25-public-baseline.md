@@ -8,12 +8,12 @@
 
 ## Tasks
 
-- [ ] Export an explicit allowlist; replace private application/vendor identifiers with neutral project identifiers and retain dependency attribution.
-- [ ] Test a single-file configuration loader: placeholders/malformed values fail safely, profile bounds are validated, and configuration values are not logged.
-- [ ] Wire builds, cloud endpoint, camera count, simulator launch and QA to that configuration. Generated private configuration and packages stay ignored.
-- [ ] Provide repeatable offline tests and a publication scanner, with regression tests proving private config/build/media/identity data cannot be published.
-- [ ] Document the stable baseline and caveats, architecture, Windows simulator setup, LLM/Codex control, skill sources, troubleshooting and an implementation-oriented roadmap.
-- [ ] Verify clean-clone offline tests and private local build/simulator operation without touching the physical TV.
+- [x] Export an explicit allowlist; replace private application/vendor identifiers with neutral project identifiers and retain dependency attribution.
+- [x] Test a single-file configuration loader: placeholders/malformed values fail safely, profile bounds are validated, and configuration values are not logged.
+- [x] Wire builds, cloud endpoint, camera count, simulator launch and QA to that configuration. Generated private configuration and packages stay ignored.
+- [x] Provide repeatable offline tests and a publication scanner, with regression tests rejecting known private config/build/media/identity patterns (not a claim of perfect detection).
+- [x] Document the stable baseline and caveats, architecture, Windows simulator setup, LLM/Codex control, skill sources, troubleshooting and an implementation-oriented roadmap.
+- [x] Verify clean-clone offline tests, private local build/package and simulator prerequisite checks without touching the physical TV. Live neutral-namespace simulator operation remains explicitly unrun; see validation notes.
 - [ ] Independently review the export, scan staged files and complete Git history, create one GitHub repository, push only audited source, tag v0.4.2, and verify public contents.
 
 ## Review focus

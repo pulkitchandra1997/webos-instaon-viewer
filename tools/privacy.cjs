@@ -1,7 +1,10 @@
 'use strict';
 // This guard is defense-in-depth, not a guarantee. Review every staged file.
 const fs=require('fs'),path=require('path'),cp=require('child_process');
-function secretVariants(values){return [...new Set(values.filter(v=>typeof v==='string'&&v.length>=4).flatMap(v=>[v,encodeURIComponent(v),Buffer.from(v).toString('base64'),Buffer.from(v).toString('hex')]))];}
+function secretVariants(values){return [...new Set(values.filter(v=>typeof v==='string'&&v.length>=4).flatMap(v=>{
+  const escaped=JSON.stringify(v).slice(1,-1);
+  return [v,escaped,JSON.stringify(escaped).slice(1,-1),encodeURIComponent(v),Buffer.from(v).toString('base64'),Buffer.from(v).toString('hex'),v.split('').map(c=>'\\u'+c.charCodeAt(0).toString(16).padStart(4,'0')).join('')];
+}))];}
 function scanEntry(file,bytes,values){
   const findings=[],name=file.replace(/\\/g,'/');
   const add=rule=>findings.push({file:name,rule});
@@ -19,7 +22,7 @@ function scanEntry(file,bytes,values){
 function git(root,args){const r=cp.spawnSync('git',args,{cwd:root,encoding:null,maxBuffer:32*1024*1024});if(r.status!==0)throw new Error('Git privacy inspection failed.');return r.stdout;}
 function privateValues(root){
   const file=path.join(root,'config.local.json');if(!fs.existsSync(file))return [];
-  let c;try{c=JSON.parse(fs.readFileSync(file,'utf8'));}catch(_){throw new Error('Cannot parse private config for privacy checking.');}
+  let c;try{c=JSON.parse(fs.readFileSync(file,'utf8').replace(/^\uFEFF/,''));}catch(_){throw new Error('Cannot parse private config for privacy checking.');}
   const r=c.recorder||{},t=c.television||{},d=c.development||{};
   return [r.instaOnId,r.username,r.password,t.host,t.privateKeyPath,...Object.values(d).filter(v=>typeof v==='string'),...((c.privacy||{}).forbiddenStrings||[])].filter(v=>typeof v==='string'&&v.length>=4);
 }
