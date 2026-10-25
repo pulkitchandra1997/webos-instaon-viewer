@@ -2,7 +2,7 @@
 const fs=require('fs'),vm=require('vm'),assert=require('assert');
 class Element {
   constructor(){this.handlers={};this.dataset={};this.children=[];this.style={};this.className='';this.hidden=false;this.clientWidth=600;this.clientHeight=300;const self=this;this.classList={contains(n){return self.className.split(' ').includes(n);},toggle(n,on){const values=new Set(self.className.split(' ').filter(Boolean));if(on===undefined)on=!values.has(n);if(on)values.add(n);else values.delete(n);self.className=Array.from(values).join(' ');},remove(n){this.toggle(n,false);}};}
-  setAttribute(){} append(...elements){for(const e of elements){e.parent=this;this.children.push(e);}} appendChild(e){this.append(e);} addEventListener(name,handler){this.handlers[name]=handler;} click(){if(this.onclick)this.onclick();if(this.handlers.click)this.handlers.click();if(this.parent)this.parent.click();}
+  setAttribute(){} append(...elements){for(const e of elements){if(e.parent&&e.parent!==this){const old=e.parent.children.indexOf(e);if(old>=0)e.parent.children.splice(old,1);}if(e.parent===this){const old=this.children.indexOf(e);if(old>=0)this.children.splice(old,1);}e.parent=this;this.children.push(e);}} appendChild(e){this.append(e);} addEventListener(name,handler){this.handlers[name]=handler;} click(){if(this.onclick)this.onclick();if(this.handlers.click)this.handlers.click();if(this.parent)this.parent.click();}
   focus(){document.activeElement=this;}
 }
 const ids={};for(const id of ['grid','status','message','summary','settings','dismiss','toggle','panel','fit','ratio','profile'])ids[id]=new Element();
@@ -66,6 +66,7 @@ workers[0].onerror({message:'Error from an old terminated worker'});
 assert.strictEqual(window.cameraDiagnostics.metrics.lastFailure,'Decoder heap budget exceeded','A terminated worker must not restart a newer session');
 ids.profile.value='small';ids.profile.onchange();
 assert.strictEqual(ids.grid.children.filter(e=>!e.hidden).length,4,'Selecting a profile must apply its preferred layout');
-assert.strictEqual(ids.grid.children[0].children[1].children[0].textContent,'Door','Selecting a profile must apply camera labels');
+assert.strictEqual(ids.grid.children[0].children[1].children[0].textContent,'Channel 3','Selecting a profile must apply its configured visual ordering');
+assert.strictEqual(ids.grid.children[1].children[1].children[0].textContent,'Door','Selecting a profile must apply camera labels');
 assert.strictEqual(ids.fit.value,'fill');assert.strictEqual(ids.ratio.value,'4:3','Selecting a profile must apply display settings');
 console.log('PASS single click/Enter enlargement, Back, four/sixteen layout controls');
