@@ -15,6 +15,7 @@
   function selected(){var order=channelOrder();return expanded?[expanded]:order.slice(0,Math.min(view,cameraCount));}
   function quality(){return expanded?0:1;}
   function call(method,parameters,onSuccess){return webOS.service.request('luna://org.webos.instaonviewer.service/',{method:method,parameters:parameters||{},onSuccess:onSuccess||function(){},onFailure:function(error){if(method==='open')fail(error.errorText||'On-TV service unavailable');}});}
+  function renderCapabilities(capabilities){var target=document.getElementById('capabilities');if(!target||!capabilities)return;var optional=['ptz','audio','talk','playback','snapshots','discovery'],unavailable=optional.filter(function(name){return capabilities[name]===false;});target.textContent='Live view and SD/HD switching enabled. Optional controls unavailable: '+unavailable.join(', ')+'.';}
   function fit(tile){if(!tile.frame)return;var ratio=CameraLayout.displayRatio(tile.frame.sar,tile.frame.width,tile.frame.height,settings.ratio);if(settings.ratio==='8:9')ratio=8/9;var size=CameraLayout.fitRect(tile.surface.clientWidth,tile.surface.clientHeight,ratio,settings.fit==='fill');tile.canvas.style.width=size.width+'px';tile.canvas.style.height=size.height+'px';}
   function updateSelection(){
     var order=displayOrder(),visible=order.slice(0,Math.min(view,order.length));grid.dataset.view=String(view);order.forEach(function(channel){grid.appendChild(tiles[channel-1].element);});tiles.forEach(function(t){t.element.hidden=visible.indexOf(t.channel)===-1;fit(t);});
@@ -60,7 +61,7 @@
       if(current!==epoch)return;
       var m=event.data;
       if(m.type==='ready'){
-        ready=true;metrics.wasmBytes=m.wasmBytes;worker.postMessage({type:'select',channels:selected(),subtype:quality()});
+        ready=true;metrics.wasmBytes=m.wasmBytes;call('status',{},function(reply){renderCapabilities(reply.capabilities);});worker.postMessage({type:'select',channels:selected(),subtype:quality()});
         subscription=webOS.service.request('luna://org.webos.instaonviewer.service/',{method:'open',subscribe:true,parameters:{subscribe:true},onSuccess:function(reply){
           if(current!==epoch)return;
           if(reply.mediaUrl&&reply.mediaUrl!==mediaUrl){mediaUrl=reply.mediaUrl;worker.postMessage({type:'connect',url:mediaUrl});call('select',{channels:selected(),subtype:quality()});}

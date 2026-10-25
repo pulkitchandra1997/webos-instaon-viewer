@@ -5,7 +5,7 @@ class Element {
   setAttribute(){} append(...elements){for(const e of elements){if(e.parent&&e.parent!==this){const old=e.parent.children.indexOf(e);if(old>=0)e.parent.children.splice(old,1);}if(e.parent===this){const old=this.children.indexOf(e);if(old>=0)this.children.splice(old,1);}e.parent=this;this.children.push(e);}} appendChild(e){this.append(e);} addEventListener(name,handler){this.handlers[name]=handler;} click(){if(this.onclick)this.onclick();if(this.handlers.click)this.handlers.click();if(this.parent)this.parent.click();}
   focus(){document.activeElement=this;}
 }
-const ids={};for(const id of ['grid','status','message','summary','settings','dismiss','toggle','panel','fit','ratio','profile'])ids[id]=new Element();
+const ids={};for(const id of ['grid','status','message','summary','settings','dismiss','toggle','panel','fit','ratio','profile','capabilities'])ids[id]=new Element();
 ids.panel.hidden=true;
 const views=[4,8,10,16].map(n=>{const e=new Element();e.dataset.view=String(n);return e;});
 ids.grid.dataset.view='10';
