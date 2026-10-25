@@ -13,6 +13,8 @@ Read [AGENTS.md](../AGENTS.md), [README.md](../README.md), [STABLE_BASELINE.md](
 
 ## Current boundaries and unresolved work
 
+Publication checkpoint (2026-10-25): the single repository is public; source-only stable tag/release `v0.4.2` points to `152a4da`; zero binary release assets were uploaded. A fresh source-only checkout passes all 16 offline test files, as does Windows GitHub Actions. See [VALIDATION.md](VALIDATION.md) for evidence boundaries. Verify remote state rather than treating these historical observations as live status.
+
 **No physical-TV contact: the user is using it.** Keep `television.enabled: false`; do not discover, pair, SSH, install, launch, restart, or inspect an actual TV. Never change recorder settings, recording quality, firmware, clock, or accounts. A live simulator can authenticate with a real recorder, so keep offline checks as the default unless a media session is authorized.
 
 TV decode throughput has been low single digits for SD and slower for HD. Exact RTCP/RTP-to-NTP and decoded-frame timing alignment is unimplemented; raw per-camera RTP clocks are not comparable. Missing SAR leaves optical geometry unknown. Shared rAF and persistent buffers do not certify synchronized capture, zero flicker, or smooth source-rate playback. P0 measurements, throughput, timing, interruption recovery, soak, config, and privacy precede optional features.

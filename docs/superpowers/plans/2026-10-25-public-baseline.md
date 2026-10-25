@@ -14,7 +14,7 @@
 - [x] Provide repeatable offline tests and a publication scanner, with regression tests rejecting known private config/build/media/identity patterns (not a claim of perfect detection).
 - [x] Document the stable baseline and caveats, architecture, Windows simulator setup, LLM/Codex control, skill sources, troubleshooting and an implementation-oriented roadmap.
 - [x] Verify clean-clone offline tests, private local build/package and simulator prerequisite checks without touching the physical TV. Live neutral-namespace simulator operation remains explicitly unrun; see validation notes.
-- [ ] Independently review the export, scan staged files and complete Git history, create one GitHub repository, push only audited source, tag v0.4.2, and verify public contents.
+- [x] Independently review the export, scan staged files and complete Git history, create one GitHub repository, push only audited source, tag v0.4.2, and verify public contents. A source-only stable release is published with zero uploaded binary assets.
 
 ## Review focus
 
