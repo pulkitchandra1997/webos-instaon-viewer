@@ -21,7 +21,7 @@ function build(){
   const serviceSource=path.join(root,'services/org.webos.instaonviewer.service');
   esbuild.buildSync({absWorkingDir:root,entryPoints:[path.join(serviceSource,'main.cjs')],bundle:true,platform:'node',target:'node12',format:'cjs',external:['webos-service','./credentials.private.json'],outfile:path.join(service,'main.cjs')});
   for(const name of ['package.json','services.json'])fs.copyFileSync(path.join(serviceSource,name),path.join(service,name));
-  for(const [source,dest] of [['direct.html','index.html'],['direct.js','index.js'],['direct.css','styles.css'],['direct-worker.js','direct-worker.js'],['render.js','render.js'],['layout.js','layout.js'],['diagnostics.js','diagnostics.js'],['icon.svg','icon.svg'],['icon.png','icon.png'],['largeIcon.png','largeIcon.png']])fs.copyFileSync(path.join(root,'src',source),path.join(app,dest));
+  for(const [source,dest] of [['direct.html','index.html'],['direct.js','index.js'],['direct.css','styles.css'],['direct-worker.js','direct-worker.js'],['render.js','render.js'],['layout.js','layout.js'],['diagnostics.js','diagnostics.js'],['timing.js','timing.js'],['icon.svg','icon.svg'],['icon.png','icon.png'],['largeIcon.png','largeIcon.png']])fs.copyFileSync(path.join(root,'src',source),path.join(app,dest));
   for(const name of ['annexb.js','shared-hevc-decoder.js'])fs.copyFileSync(path.join(root,'experiments/direct-tv/decoder',name),path.join(app,name));
   fs.copyFileSync(path.resolve(root,sdk),path.join(app,'webOSTV.js'));
   fs.copyFileSync(path.join(root,'appinfo.json'),path.join(app,'appinfo.json'));
