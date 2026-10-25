@@ -42,6 +42,7 @@ assert.strictEqual(platformBackCalls,1,'TV Back at the root must return to the p
 views[0].onclick();assert.strictEqual(ids.grid.dataset.view,'4');assert.strictEqual(ids.grid.children.filter(e=>!e.hidden).length,4);
 views[3].onclick();assert.strictEqual(ids.grid.children.filter(e=>!e.hidden).length,16);
 views[2].onclick();workers[0].onmessage({data:{type:'ready',wasmBytes:201326592}});
+const statusRequest=requests.find(r=>r.method==='status');statusRequest.onSuccess({capabilities:{ptz:false,audio:false,talk:false,playback:false,snapshots:false,discovery:false}});assert(ids.capabilities.textContent.includes('Optional controls unavailable'),'Service capabilities must be explained in Settings');
 now+=35000;healthTick();assert.strictEqual(scheduled.length,0,'A valid 45-second handshake must not be interrupted after 35 seconds');
 const open=requests.find(r=>r.method==='open');open.onSuccess({state:'connecting',mediaUrl:'ws://127.0.0.1/fixture'});
 assert(requests.filter(r=>r.method==='select').every(r=>r.parameters.subtype===1),'Every grid layout must request SD');
