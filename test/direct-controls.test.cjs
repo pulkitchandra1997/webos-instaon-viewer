@@ -69,4 +69,5 @@ assert.strictEqual(ids.grid.children.filter(e=>!e.hidden).length,4,'Selecting a 
 assert.strictEqual(ids.grid.children[0].children[1].children[0].textContent,'Channel 3','Selecting a profile must apply its configured visual ordering');
 assert.strictEqual(ids.grid.children[1].children[1].children[0].textContent,'Door','Selecting a profile must apply camera labels');
 assert.strictEqual(ids.fit.value,'fill');assert.strictEqual(ids.ratio.value,'4:3','Selecting a profile must apply display settings');
+document.activeElement=ids.grid.children[0];document.handlers.keydown({key:'ArrowRight',keyCode:39,preventDefault(){}});assert.strictEqual(document.activeElement,ids.grid.children[1],'Remote navigation must follow profile-defined tile ordering');
 console.log('PASS single click/Enter enlargement, Back, four/sixteen layout controls');
