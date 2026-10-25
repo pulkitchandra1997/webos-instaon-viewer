@@ -1,5 +1,6 @@
 'use strict';
 const fs=require('fs'),path=require('path');
+const {validateProfile}=require('./profiles.cjs');
 function invalid(field){throw new Error('Invalid configuration field: '+field);}
 function text(value,field){if(typeof value!=='string'||!value.trim()||value.startsWith('REPLACE_'))invalid(field);}
 function port(value,field){if(!Number.isInteger(value)||value<1||value>65535)invalid(field);}
@@ -10,6 +11,7 @@ function validateConfig(c,options){
   text(c.cloud.host,'cloud.host');if(!/^[a-zA-Z0-9.-]+$/.test(c.cloud.host))invalid('cloud.host');port(c.cloud.port,'cloud.port');
   if(!Number.isInteger(c.viewer.cameraCount)||c.viewer.cameraCount<1||c.viewer.cameraCount>10)invalid('viewer.cameraCount');
   if(![4,8,10,16].includes(c.viewer.defaultView))invalid('viewer.defaultView');
+  if(c.profiles!==undefined){if(!Array.isArray(c.profiles)||!c.profiles.length)invalid('profiles');try{c.profiles.forEach(validateProfile);}catch(error){throw new Error('Invalid configuration field: profiles ('+error.message+')');}}
   for(const field of ['simulatorExecutable','simulatorServiceDirectory','webosCliDirectory','decoderAssetsDirectory','webosSdkScript'])if(typeof c.development[field]!=='string')invalid('development.'+field);
   port(c.development.simulatorDebugPort,'development.simulatorDebugPort');
   if(typeof c.television.enabled!=='boolean')invalid('television.enabled');port(c.television.sshPort,'television.sshPort');
@@ -25,5 +27,5 @@ function loadConfig(root,options){
   return validateConfig(c,options);
 }
 function serviceConfig(c){return {deviceid:c.recorder.instaOnId,username:c.recorder.username,password:c.recorder.password,cloud:{host:c.cloud.host,port:c.cloud.port},cameraCount:c.viewer.cameraCount};}
-function publicProfile(c){return {cameraCount:c.viewer.cameraCount,defaultView:c.viewer.defaultView};}
+function publicProfile(c){const profile={cameraCount:c.viewer.cameraCount,defaultView:c.viewer.defaultView};if(Array.isArray(c.profiles))profile.profiles=c.profiles.map(p=>({version:p.version,id:p.id,name:p.name,cameraCount:p.cameraCount,defaultView:p.defaultView,labels:p.labels,order:p.order,fit:p.fit,ratio:p.ratio}));return profile;}
 module.exports={loadConfig,validateConfig,serviceConfig,publicProfile};

@@ -16,6 +16,9 @@ for(const count of [0,11,2.5]){const invalid=JSON.parse(JSON.stringify(fixture))
 for(const port of [0,65536,'8800']){const invalid=JSON.parse(JSON.stringify(fixture));invalid.cloud.port=port;assert.throws(()=>validateConfig(invalid),/port/);}
 const custom=JSON.parse(JSON.stringify(fixture));custom.cloud={host:'cloud.example.invalid',port:9000};custom.viewer.cameraCount=6;custom.viewer.defaultView=8;
 assert.strictEqual(serviceConfig(custom).cloud.port,9000);assert.deepStrictEqual(publicProfile(custom),{cameraCount:6,defaultView:8});
+custom.profiles=[{version:1,id:'home',name:'Home',cameraCount:6,defaultView:8,labels:{'1':'Front'},order:[1,2,3,4,5,6],fit:'fit',ratio:'auto'}];
+assert.strictEqual(validateConfig(custom).profiles[0].id,'home');assert.strictEqual(publicProfile(custom).profiles[0].name,'Home');
+const invalidProfiles=JSON.parse(JSON.stringify(custom));invalidProfiles.profiles[0].order=[1,1,2,3,4,5];assert.throws(()=>validateConfig(invalidProfiles),/profiles/);
 const tmp=fs.mkdtempSync(path.join(os.tmpdir(),'webos-config-test-'));
 try{
   assert.throws(()=>loadConfig(tmp),/config.local.json/);

@@ -43,16 +43,16 @@ All items below are **PENDING** unless a future handoff records evidence and acc
 | ID | Priority | Status | Task | Acceptance evidence |
 | --- | --- | --- | --- |
 | P0-01 | High | In progress | Add repeatable per-camera latency, dropped-frame, decode-time, and queue-depth measurements using offline fixtures and authorized simulator sessions. | Focused/offline tests pass; simulator media report remains pending service registration and authorized feeds. |
-| P0-02 | High | Improve interruption recovery for cloud disconnects, malformed packets, decoder reset, and stalled cameras. | Deterministic fault-injection tests and a simulator soak result. |
-| P0-03 | High | Measure and reduce wall-view decode load without changing recorder settings. | Before/after metrics for 10-camera SD wall and single-camera HD; no unsupported performance claim. |
-| P0-04 | High | Specify timestamp alignment and presentation policy. | Documented clock assumptions, fallback behavior, and a test proving the UI does not falsely claim synchronized capture. |
-| P1-01 | Medium | Finish config validation and user-facing error states. | Invalid/missing fields fail safely; secrets never appear in UI, logs, tests, or artifacts. |
-| P1-02 | Medium | Add optional saved profiles without storing credentials in tracked files. | Profile tests, migration behavior, and privacy scan. |
-| P1-03 | Medium | Improve remote navigation and focus visibility across every grid. | Simulator key-matrix evidence for arrows, OK, Back, color keys, and overflow. |
-| P1-04 | Medium | Add recorder/channel discovery only if the authorized transport exposes a stable supported API. | Protocol evidence, mock tests, and explicit fallback when discovery is unavailable. |
-| P2-01 | Low | Evaluate PTZ, audio, talk, playback, snapshots, and camera health indicators as separate feature slices. | Each slice has a protocol/licensing gate and offline tests before implementation. |
-| P2-02 | Low | Add packaging/release guidance for authorized decoder assets and private IPKs. | No secret-bearing artifact is attached; licensing review is complete. |
-| P3-01 | Low | Resolve own-code and dependency licensing before any redistribution or public store submission. | Written provenance decision and updated LICENSE/NOTICE policy. |
+| P0-02 | High | Baseline verified | Improve interruption recovery for cloud disconnects, malformed packets, decoder reset, and stalled cameras. | Existing engine/bridge fault-injection tests cover bounded retry, keyframe recovery, stale feeds, cancellation, and cleanup; simulator soak remains pending service registration. |
+| P0-03 | High | Measurement ready | Measure and reduce wall-view decode load without changing recorder settings. | Diagnostics now capture queue/decode/latency evidence; optimization still requires a valid media session. |
+| P0-04 | High | Blocked | Specify timestamp alignment and presentation policy. | Raw Annex-B decoder output currently reports timestamp mapping unavailable; RTP/RTCP clock association requires protocol evidence and is not claimed. |
+| P1-01 | Medium | Baseline verified | Finish config validation and user-facing error states. | Config, placeholder, overwrite, missing-file, redacted-error, and public-profile tests pass. |
+| P1-02 | Medium | In progress | Add optional saved profiles without storing credentials in tracked files. | Version-one validation, migration, and redacted export are implemented; UI selection remains. |
+| P1-03 | Medium | Baseline verified | Improve remote navigation and focus visibility across every grid. | Offline tests cover arrow navigation, Enter/OK, Escape/Back, 4/8/10/16 layouts, and focus transitions; full simulator media evidence remains pending. |
+| P1-04 | Medium | Blocked | Add recorder/channel discovery only if the authorized transport exposes a stable supported API. | No stable supported discovery API is established; keep explicit configuration and offline fixtures. |
+| P2-01 | Low | Blocked | Evaluate PTZ, audio, talk, playback, snapshots, and camera health indicators as separate feature slices. | Requires supported protocol/capability evidence, explicit actuator/microphone consent, and codec/licensing gates. |
+| P2-02 | Low | Baseline documented | Add packaging/release guidance for authorized decoder assets and private IPKs. | Setup, privacy, staging, and private-artifact boundaries are documented; no secret-bearing artifact is attached. |
+| P3-01 | Low | Blocked | Resolve own-code and dependency licensing before any redistribution or public store submission. | Dependency/decoder provenance decision is still required before redistribution. |
 
 ## Safe first action
 

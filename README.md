@@ -113,6 +113,7 @@ Packages can contain private configuration and must not be uploaded automaticall
 - [Fresh source/export validation](docs/VALIDATION.md)
 - [Skills and upstream links](docs/SKILLS.md)
 - [Local config and private build setup](docs/SETUP.md)
+- [Local display profiles](docs/PROFILES.md)
 - [Publication, privacy, and licensing boundaries](docs/PRIVACY.md) · [LICENSING.md](docs/LICENSING.md)
 - [Agent working rules](AGENTS.md)
 
