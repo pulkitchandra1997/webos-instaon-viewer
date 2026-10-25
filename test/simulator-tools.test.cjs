@@ -12,6 +12,7 @@ assert.strictEqual(qa.debuggerUrl('ws://localhost:9224/devtools/page/fixture',92
 assert.throws(()=>qa.debuggerUrl('ws://example.invalid:9224/devtools/page/fixture',9224));
 assert.throws(()=>qa.debuggerUrl('ws://127.0.0.1:9225/devtools/page/fixture',9224));
 assert.throws(()=>qa.parseArguments(['--soak-seconds','0']));
+assert.strictEqual(qa.parseArguments(['--ui-only']).uiOnly,true);
 const session={appId:launcher.APP_ID,serviceId:launcher.SERVICE_ID,sessionId:'1'.repeat(32),appPath:plan.appPath,debugPort:9224,debug:true};
 assert.strictEqual(qa.validateSession(session,root,9224),session);
 const url=pathToFileURL(path.join(plan.appPath,'index.html')).href;

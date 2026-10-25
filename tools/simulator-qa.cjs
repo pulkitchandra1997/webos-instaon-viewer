@@ -12,17 +12,18 @@ const { APP_ID, SERVICE_ID, ROOT, assertNoLinks, assertIgnoredOutput, validateSt
 const HEAP_BUDGET = 192 * 1024 * 1024;
 
 function parseArguments(args) {
-  const options = { soakSeconds: 15, timeoutSeconds: 120, gpu: false, help: false };
+  const options = { soakSeconds: 15, timeoutSeconds: 120, gpu: false, uiOnly: false, help: false };
   for (let index = 0; index < args.length; index++) {
     const argument = args[index];
     if (argument === '--gpu') options.gpu = true;
+    else if (argument === '--ui-only') options.uiOnly = true;
     else if (argument === '--help') options.help = true;
     else if (argument === '--soak-seconds' || argument === '--timeout-seconds') {
       const value = args[++index];
       const max = argument === '--soak-seconds' ? 3600 : 300;
       if (!/^\d+$/.test(value || '') || Number(value) < 1 || Number(value) > max) throw new Error('QA durations must be positive whole seconds within the documented limits.');
       options[argument === '--soak-seconds' ? 'soakSeconds' : 'timeoutSeconds'] = Number(value);
-    } else throw new Error('Usage: npm run qa:simulator -- [--soak-seconds 15] [--timeout-seconds 120] [--gpu]');
+    } else throw new Error('Usage: npm run qa:simulator -- [--soak-seconds 15] [--timeout-seconds 120] [--gpu] [--ui-only]');
   }
   return options;
 }
@@ -266,6 +267,35 @@ async function runChecks(evaluate, config, options, signal) {
   }
 }
 
+async function runUiChecks(evaluate, config, options, signal) {
+  const deadline = Date.now() + options.timeoutSeconds * 1000;
+  const waitFor = async expression => {
+    while (Date.now() < deadline) {
+      signal?.throwIfAborted();
+      if (await evaluate(expression)) return;
+      await delay(100, undefined, { signal });
+    }
+    throw new Error('Timed out waiting for simulator UI controls.');
+  };
+  await waitFor(`!!(document.querySelector('.tile')&&document.getElementById('grid')&&document.getElementById('ratio')&&document.getElementById('fit')&&document.getElementById('toggle')&&document.getElementById('profile'))`);
+  const initial = await evaluate(`({view:Number(document.getElementById('grid').dataset.view),visible:Array.from(document.querySelectorAll('.tile')).filter(t=>!t.hidden).length,profileOptions:document.getElementById('profile').options.length,overflow:document.documentElement.scrollWidth>innerWidth||document.documentElement.scrollHeight>innerHeight})`);
+  assert.equal(initial.view, config.viewer.defaultView, 'UI-only launch must use configured default layout');
+  assert.equal(initial.visible, config.viewer.defaultView, 'UI-only launch must show the configured layout count');
+  assert.equal(initial.overflow, false, 'UI-only launch must fit the simulator viewport');
+  const layouts=[];
+  for (const count of [4,8,10,16]) {
+    await evaluate(`document.querySelector('button[data-view="${count}"]').click()`);
+    const result=await evaluate(`({view:Number(document.getElementById('grid').dataset.view),visible:Array.from(document.querySelectorAll('.tile')).filter(t=>!t.hidden).length,overflow:document.documentElement.scrollWidth>innerWidth||document.documentElement.scrollHeight>innerHeight})`);
+    assert.equal(result.view,count);assert.equal(result.visible,count);assert.equal(result.overflow,false);layouts.push(result);
+  }
+  await evaluate(`document.querySelector('.tile').click()`);
+  const enlarged=await evaluate(`({count:document.querySelectorAll('.enlarged').length,width:document.querySelector('.tile').getBoundingClientRect().width,viewportWidth:innerWidth})`);
+  assert.equal(enlarged.count,1);assert(enlarged.width>=enlarged.viewportWidth-40);
+  await evaluate(`document.dispatchEvent(new KeyboardEvent('keydown',{key:'Escape'}))`);
+  assert.equal(await evaluate(`document.querySelectorAll('.enlarged').length`),0);
+  return {success:true,uiOnly:true,appId:APP_ID,defaultView:config.viewer.defaultView,initial,layouts,enlarged};
+}
+
 function writeReport(root, report, io = fs) {
   assertIgnoredOutput(root, 'reports', io);
   const directory = path.join(root, 'reports');
@@ -280,7 +310,7 @@ function writeReport(root, report, io = fs) {
 async function main(args = process.argv.slice(2)) {
   const options = parseArguments(args);
   if (options.help) {
-    console.log('Usage: npm run qa:simulator -- [--soak-seconds 15] [--timeout-seconds 120] [--gpu]\nRequires this repository simulator started with --debug and its service enabled.\nSoak: 1..3600 seconds; per-condition timeout: 1..300 seconds. Reports stay in ignored reports/.');
+    console.log('Usage: npm run qa:simulator -- [--soak-seconds 15] [--timeout-seconds 120] [--gpu] [--ui-only]\nRequires this repository simulator started with --debug. Live mode requires its service enabled; --ui-only does not.\nSoak: 1..3600 seconds; per-condition timeout: 1..300 seconds. Reports stay in ignored reports/.');
     return;
   }
   const config = require('./config.cjs').loadConfig(ROOT);
@@ -310,9 +340,9 @@ async function main(args = process.argv.slice(2)) {
     abort.signal.throwIfAborted();
     const evaluate = expression => client.evaluate(ownedExpression(expression, session));
     assert.equal(await evaluate('true'), true, 'QA must control only its owned launch session');
-    const report = await runChecks(evaluate, config, options, abort.signal);
+    const report = options.uiOnly ? await runUiChecks(evaluate, config, options, abort.signal) : await runChecks(evaluate, config, options, abort.signal);
     const filename = writeReport(ROOT, report);
-    console.log('PASS simulator: configured moving feeds, layouts, enlargement/Back, aspect/centering, pause/resume, and decoder heap budget.');
+    console.log(options.uiOnly ? 'PASS simulator UI-only: layouts, enlargement/Back, profile control, viewport fit, and no media prerequisite.' : 'PASS simulator: configured moving feeds, layouts, enlargement/Back, aspect/centering, pause/resume, and decoder heap budget.');
     console.log('Local report: ' + filename);
   } finally {
     if (client) await client.close();
@@ -324,4 +354,4 @@ async function main(args = process.argv.slice(2)) {
 
 if (require.main === module) main().catch(error => { console.error(error.name === 'AbortError' ? 'Simulator QA cancelled.' : error.message); process.exitCode = 1; });
 
-module.exports = { parseArguments, validateSession, isOwnPage, debuggerUrl, readTargets, CdpClient, ownedExpression, sampleExpression, runChecks, writeReport, main };
+module.exports = { parseArguments, validateSession, isOwnPage, debuggerUrl, readTargets, CdpClient, ownedExpression, sampleExpression, runChecks, runUiChecks, writeReport, main };

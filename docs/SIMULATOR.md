@@ -59,13 +59,15 @@ npm run qa:simulator
 npm run qa:simulator -- --soak-seconds 60 --timeout-seconds 180
 # Optional: deliberately lose one WebGL context and test recovery.
 npm run qa:simulator -- --gpu
+# Verify the UI without registering the service or opening camera feeds.
+npm run qa:simulator -- --ui-only
 ```
 
 The default soak is 15 seconds; accepted values are 1–3600 seconds. Each readiness condition has a 120-second timeout by default, adjustable to 1–300 seconds. Cold cloud handshakes may take over a minute. The optional GPU test requires `WEBGL_lose_context` support and deliberately interrupts a renderer in this simulator.
 
 QA requires the launch record in ignored `build/simulator/session.json`, the exact staged `build/direct/app/index.html` page, and the matching `webOSSystem.launchParams.simulatorSession` marker. It refuses unrelated pages, ambiguous matches, stale launch sessions, external WebSocket URLs, other ports, and HTTP redirects. Every evaluated action rechecks page/session identity, including cleanup. It never automatically launches a simulator.
 
-Checks cover configured active cameras, 4/8/10/16-tile layouts, enlargement and Escape/Back behavior, 4:3 aspect and centering, viewport overflow, pause closing recorder connections, resume, ongoing fresh frames, and the 192 MiB shared WASM heap budget. Counts come from the configured camera count and selected view. Saved view, aspect, fit and pause state are restored when the owned page remains connected. QA does change the running simulator UI while testing and can reopen recorder connections when resuming feeds.
+Live checks cover configured active cameras, 4/8/10/16-tile layouts, enlargement and Escape/Back behavior, 4:3 aspect and centering, viewport overflow, pause closing recorder connections, resume, ongoing fresh frames, and the 192 MiB shared WASM heap budget. `--ui-only` checks the controls, layouts, enlargement/Back behavior, profile control, and viewport overflow without service registration or camera feeds. Counts come from the configured camera count and selected view. QA does change the running simulator UI; live mode can reopen recorder connections when resuming feeds.
 
 Successful runs write a uniquely named JSON report only to ignored `reports/`. Reports contain numeric frame/memory/layout measurements and sanitized check results; they omit recorder credentials, connection URLs, raw service responses, and HTML. Failures print a concise error and exit nonzero. Ctrl+C or socket failures reject pending requests, clear their timers and close or terminate the owned CDP socket within a bounded interval; the simulator stays running.
 
