@@ -5,7 +5,7 @@ class Element {
   setAttribute(){} append(...elements){for(const e of elements){e.parent=this;this.children.push(e);}} appendChild(e){this.append(e);} addEventListener(name,handler){this.handlers[name]=handler;} click(){if(this.onclick)this.onclick();if(this.handlers.click)this.handlers.click();if(this.parent)this.parent.click();}
   focus(){document.activeElement=this;}
 }
-const ids={};for(const id of ['grid','status','message','summary','settings','dismiss','toggle','panel','fit','ratio'])ids[id]=new Element();
+const ids={};for(const id of ['grid','status','message','summary','settings','dismiss','toggle','panel','fit','ratio','profile'])ids[id]=new Element();
 ids.panel.hidden=true;
 const views=[4,8,10,16].map(n=>{const e=new Element();e.dataset.view=String(n);return e;});
 ids.grid.dataset.view='10';
@@ -14,7 +14,7 @@ const workers=[];class Worker{constructor(){workers.push(this);this.messages=[];
 let platformBackCalls=0,now=100000,healthTick;const scheduled=[],requests=[],paintTicks=[];
 class Clock extends Date{static now(){return now;}}
 const webOS={platformBack(){platformBackCalls++;},service:{request(uri,options){requests.push(options);return {cancel(){}};}}};
-const window={webOS,addEventListener(){}};
+const window={webOS,VIEWER_PROFILE:{cameraCount:10,defaultView:10,profiles:[{version:1,id:'default',name:'Default',cameraCount:10,defaultView:10,labels:{},order:[1,2,3,4,5,6,7,8,9,10],fit:'fit',ratio:'auto'},{version:1,id:'small',name:'Small profile',cameraCount:3,defaultView:4,labels:{'1':'Door'},order:[3,1,2],fit:'fill',ratio:'4:3'}]},addEventListener(){}};
 vm.runInNewContext(fs.readFileSync(__dirname+'/../src/direct.js','utf8'),{document,window,webOS,Worker,Date:Clock,requestAnimationFrame(callback){paintTicks.push(callback);return paintTicks.length;},cancelAnimationFrame(){paintTicks.length=0;},CameraRenderer:function(){this.paint=function(){};},setInterval(callback){healthTick=callback;return 1;},clearInterval(){},setTimeout(callback,delay){scheduled.push({callback,delay});return scheduled.length;},clearTimeout(){},localStorage:{getItem(){return null;},setItem(){}},CameraLayout:require('../src/layout.js'),Map,Set,console});
 assert.strictEqual(ids.grid.dataset.view,'10','Fresh launch must always default to ten-camera view');
 assert.strictEqual(ids.grid.children.filter(e=>!e.hidden).length,10,'Fresh launch must display exactly ten camera tiles');
@@ -61,4 +61,8 @@ assert.strictEqual(window.cameraDiagnostics.metrics.lastFailure,'Decoder heap bu
 scheduled[scheduled.length-1].callback();
 workers[0].onerror({message:'Error from an old terminated worker'});
 assert.strictEqual(window.cameraDiagnostics.metrics.lastFailure,'Decoder heap budget exceeded','A terminated worker must not restart a newer session');
+ids.profile.value='small';ids.profile.onchange();
+assert.strictEqual(ids.grid.children.filter(e=>!e.hidden).length,4,'Selecting a profile must apply its preferred layout');
+assert.strictEqual(ids.grid.children[0].children[1].children[0].textContent,'Door','Selecting a profile must apply camera labels');
+assert.strictEqual(ids.fit.value,'fill');assert.strictEqual(ids.ratio.value,'4:3','Selecting a profile must apply display settings');
 console.log('PASS single click/Enter enlargement, Back, four/sixteen layout controls');

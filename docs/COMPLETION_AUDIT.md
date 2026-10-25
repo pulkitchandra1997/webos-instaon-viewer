@@ -9,7 +9,7 @@ This audit records what was implemented and what remains externally gated. It is
 | P0-03 throughput | Measurement-ready | Shared decoder, bounded backpressure, persistent surfaces, and diagnostics exist. Before/after optimization requires a valid 10-camera media session and must not change recorder settings. |
 | P0-04 timing | Not complete | The decoder explicitly reports raw-Annex-B timestamp mapping unavailable. RTP/RTCP sender-report mapping requires protocol evidence and decoded-frame association. |
 | P1-01 configuration | Baseline verified | Schema validation, placeholder rejection, no-overwrite configure, redacted errors, service-side secrets, and public-profile tests pass. |
-| P1-02 profiles | Foundation implemented | Version-one non-secret profile validation, migration, and redacted export are implemented. UI profile selection and profile persistence remain. |
+| P1-02 profiles | Implemented | Version-one non-secret validation, migration, redacted export, UI selection, local profile-ID persistence, labels, ordering, layout, fit, and ratio application are covered by offline tests. Recorder credentials remain outside profiles. |
 | P1-03 remote navigation | Baseline verified | Offline tests cover arrows, Enter/OK, Escape/Back, focus, and 4/8/10/16 layouts. Full simulator media evidence remains pending. |
 | P1-04 discovery | Not exposed | No stable supported read-only discovery API is established; the app intentionally keeps explicit configuration. |
 | P2 controls/media | Blocked | PTZ, talk, audio, playback, and snapshots require supported protocol/capability evidence, explicit permissions, and in some cases codec/licensing review. No fake controls are shipped. |
