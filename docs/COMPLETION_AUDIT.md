@@ -12,7 +12,7 @@ This audit records what was implemented and what remains externally gated. It is
 | P1-02 profiles | Implemented | Version-one non-secret validation, migration, redacted export, UI selection, local profile-ID persistence, labels, ordering, layout, fit, and ratio application are covered by offline tests. Recorder credentials remain outside profiles. |
 | P1-03 remote navigation | Baseline verified | Offline tests cover arrows, Enter/OK, Escape/Back, focus, profile ordering, and 4/8/10/16 layouts. The simulator QA runner now has `--ui-only` for these checks without service registration; a live media run remains pending. |
 | P1-04 discovery | Not exposed | No stable supported read-only discovery API is established; the app intentionally keeps explicit configuration. |
-| P2 controls/media | Blocked | PTZ, talk, audio, playback, and snapshots require supported protocol/capability evidence, explicit permissions, and in some cases codec/licensing review. No fake controls are shipped. |
+| P2 controls/media | Explicitly unavailable | The read-only service status now publishes a capability contract: live view and quality switching are supported; PTZ, talk, audio, playback, snapshots, and discovery remain false with an explanation. No fake controls are shipped. |
 | P3 distribution | Blocked | Own-code, transport dependency, decoder, and LG-tool redistribution decisions remain unresolved; no public IPK or proprietary payload is attached. |
 
 ## Safe next actions
