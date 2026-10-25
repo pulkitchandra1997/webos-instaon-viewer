@@ -288,12 +288,14 @@ async function runUiChecks(evaluate, config, options, signal) {
     const result=await evaluate(`({view:Number(document.getElementById('grid').dataset.view),visible:Array.from(document.querySelectorAll('.tile')).filter(t=>!t.hidden).length,overflow:document.documentElement.scrollWidth>innerWidth||document.documentElement.scrollHeight>innerHeight})`);
     assert.equal(result.view,count);assert.equal(result.visible,count);assert.equal(result.overflow,false);layouts.push(result);
   }
+  await evaluate(`(()=>{const first=document.querySelector('.tile');first.focus();document.dispatchEvent(new KeyboardEvent('keydown',{key:'ArrowRight',keyCode:39}));})()`);
+  assert.equal(await evaluate(`document.activeElement&&document.activeElement.classList.contains('tile')`),true,'Remote ArrowRight must move focus between visible tiles');
   await evaluate(`document.querySelector('.tile').click()`);
   const enlarged=await evaluate(`({count:document.querySelectorAll('.enlarged').length,width:document.querySelector('.tile').getBoundingClientRect().width,viewportWidth:innerWidth})`);
   assert.equal(enlarged.count,1);assert(enlarged.width>=enlarged.viewportWidth-40);
   await evaluate(`document.dispatchEvent(new KeyboardEvent('keydown',{key:'Escape'}))`);
   assert.equal(await evaluate(`document.querySelectorAll('.enlarged').length`),0);
-  return {success:true,uiOnly:true,appId:APP_ID,defaultView:config.viewer.defaultView,initial,layouts,enlarged};
+  return {success:true,uiOnly:true,appId:APP_ID,defaultView:config.viewer.defaultView,initial,layouts,remoteNavigation:true,enlarged};
 }
 
 function writeReport(root, report, io = fs) {
