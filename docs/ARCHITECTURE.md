@@ -8,6 +8,7 @@ The TV hosts both the web frontend and its Node 12 service. The service authenti
 | --- | --- |
 | `src/` | Frontend, focus/navigation, SD-grid/HD-single selection, Worker coordination, aspect/layout, WebGL presentation |
 | `services/org.webos.instaonviewer.service/` | Luna lifecycle, session ownership, authenticated loopback media delivery, transport orchestration |
+| `src/timing.js` | Standards-based RTCP/RTP clock mapping and bounded multi-channel alignment policy; only usable when transport and decoder provide trustworthy timestamps |
 | `experiments/direct-tv/core/` | InstaOn/PTCP/RTSP protocol and channel/session support |
 | `experiments/direct-tv/build/` | Ignored generated transport from the pinned npm dependency, prepared during `npm ci`; not vendored compiled upstream code |
 | `experiments/direct-tv/decoder/` | Decoder integration wrappers; vendor JavaScript/WASM must be supplied separately |
