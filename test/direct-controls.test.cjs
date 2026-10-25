@@ -25,6 +25,9 @@ document.handlers.keydown({key:'ArrowDown',keyCode:40,preventDefault(){}});asser
 document.handlers.keydown({key:'ArrowUp',keyCode:38,preventDefault(){}});assert.strictEqual(document.activeElement,ids.grid.children[1]);
 document.handlers.keydown({key:'ArrowUp',keyCode:38,preventDefault(){}});assert.strictEqual(document.activeElement,views[2],'Up from the top row must reach the view controls');
 document.handlers.keydown({key:'ArrowLeft',keyCode:37,preventDefault(){}});assert.strictEqual(document.activeElement,views[1]);
+document.handlers.keydown({key:'ArrowLeft',keyCode:37,preventDefault(){}});assert.strictEqual(document.activeElement,views[0]);
+document.handlers.keydown({key:'ArrowLeft',keyCode:37,preventDefault(){}});assert.strictEqual(document.activeElement,ids.profile,'Profile selector must be reachable from the remote control row');
+document.activeElement=views[0];
 const tile=ids.grid.children[0];tile.click();assert(tile.classList.contains('enlarged'),'A single click must enlarge a camera');
 tile.click();assert(!tile.classList.contains('enlarged'));
 document.activeElement=tile;

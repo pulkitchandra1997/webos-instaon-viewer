@@ -102,11 +102,12 @@
   var panel=document.getElementById('panel');
   function focus(element){if(element&&element.focus)element.focus();}
   var viewButtons=Array.from(document.querySelectorAll('button[data-view]'));
-  var controls=viewButtons.concat([document.getElementById('settings'),document.getElementById('toggle')]);
+  var controls=(profileSelect?[profileSelect]:[]).concat(viewButtons,[document.getElementById('settings'),document.getElementById('toggle')]);
   document.getElementById('settings').onclick=function(){panel.hidden=!panel.hidden;focus(document.getElementById(panel.hidden?'settings':'fit'));};
   document.getElementById('dismiss').onclick=function(){panel.hidden=true;focus(document.getElementById('settings'));};
   function navigate(key){
     var active=document.activeElement,index=controls.indexOf(active),tile=tiles.findIndex(function(t){return t.element===active;});
+    if(profileSelect&&active===profileSelect)return false;
     if(!panel.hidden){
       var fields=['fit','ratio','dismiss'].map(function(id){return document.getElementById(id);}),field=fields.indexOf(active);
       // Native select menus retain their normal up/down behavior. Left/right
