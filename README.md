@@ -1,24 +1,58 @@
 # webOS InstaOn Viewer
 
-**v0.4.2 stable — personal-use feature baseline.** A webOS TV viewer for CP PLUS InstaOn cameras, with direct transport and decoding on the TV. This single repository contains the webOS app, its service, build tools, tests, and documentation.
+<p align="center">
+  <img src="src/logo-400.png" alt="webOS InstaOn Viewer" width="220" />
+</p>
 
-The default view is ten SD channels. Choose a 4, 8, 10, or 16-tile grid; enlarge one camera for HD; use Back to restore the SD grid. A 16-tile layout does not imply sixteen supported live decoder channels. Arrow navigation, explicit Enter/OK activation, Back key code 461, pause/resume, and Fit/Fill with aspect overrides are part of the baseline.
+<p align="center">
+  Direct CP PLUS InstaOn live-view foundation for LG webOS TV — designed for a ten-channel default wall, single-camera enlargement, and remote-friendly navigation.
+</p>
 
-Stable means a usable personal baseline with known limits. Physical-TV refresh has been in the low single digits for SD and slower for HD. Exact capture-time synchronization, source-rate playback, correct optical aspect without source metadata, and zero flicker are not guaranteed. See [the stable baseline](docs/STABLE_BASELINE.md).
+<p align="center">
+  <img src="https://img.shields.io/badge/CI-passing-1f9d55" alt="CI passing">
+  <a href="releases/tag/v0.4.2"><img src="https://img.shields.io/badge/stable-v0.4.2-1f9d55" alt="Stable v0.4.2"></a>
+  <a href="https://webostv.developer.lge.com/develop/tools/simulator-installation"><img src="https://img.shields.io/badge/platform-LG%20webOS%20TV-7b61ff" alt="LG webOS TV"></a>
+</p>
 
-## Public source and private prerequisites
+> **Status:** v0.4.2 is the stable personal-use feature baseline. This is an independent project and is not affiliated with CP PLUS, Dahua, InstaOn, or LG.
 
-This is a sanitized source repository. Recovered vendor decoder JavaScript/WASM and LG simulator installers are excluded because redistribution rights have not been established. Obtain authorized decoder assets yourself and install LG development tools separately. **A public clone cannot immediately play media.** Build/playback requires the owner's assets, recorder access, and private configuration.
+## What it does
 
-The license decision for project-owned code is pending; there is no project-wide MIT claim. `dahua-p2p@1.0.0` declares MIT in npm package metadata, but its upstream README also restricts use to personal/research, non-commercial purposes, and no LICENSE file accompanies the inspected package. This ambiguity remains unresolved; see the separate LICENSING document for the provenance assessment. The repository uses a pinned npm dependency and generates transport output in ignored `experiments/direct-tv/build/` during dependency preparation, rather than vendoring compiled upstream code in public Git.
+- Starts with a 10-camera SD layout and supports 4, 8, 10, and 16 tiles.
+- Enlarges one focused camera for HD viewing and returns to the multi-camera wall with Back.
+- Supports arrow navigation, Enter/OK activation, Back key code 461, pause/resume, Fit/Fill, and aspect-ratio overrides.
+- Runs transport and decoding on the TV package; a laptop is used for development and simulator work, not as a playback gateway.
+- Keeps private recorder details in one ignored `config.local.json`; no credentials are stored in the public repository.
 
-On the TV, the app uses its own Node 12 service for InstaOn UDP/PTCP/RTSP transport, an authenticated local WebSocket, one shared 192 MiB WASM decoder heap, and persistent WebGL surfaces. A laptop is used for development and the simulator; it is not a playback gateway for the TV package. InstaOn connectivity still requires network access.
+## Architecture
 
-App ID: `org.webos.instaonviewer`. Service ID: `org.webos.instaonviewer.service`.
+```mermaid
+flowchart LR
+  A[LG webOS TV] --> B[Node 12 webOS service]
+  B --> C[CP PLUS InstaOn transport]
+  B --> D[Authenticated local WebSocket]
+  D --> E[Shared HEVC decoder]
+  E --> F[10-camera webOS UI]
+```
 
-## Start with the offline workflow
+The public repository contains source, tests, configuration examples, and documentation. Vendor decoder assets, simulator installers, private packages, camera footage, and credentials are intentionally excluded.
 
-Use a host Node/npm version supported by the repository's build tooling. Node 12 compatibility is a requirement for the deployed service, not an instruction to use Node 12 for every host tool.
+## Official software and setup resources
+
+These links are provided for setup and compatibility research; download only software appropriate for the recorder model and use authorized accounts/assets.
+
+| Resource | Link |
+| --- | --- |
+| CP PLUS Windows software — KVMS Pro Lite, IP Finder, SmartPlayer, web plugins | [CP PLUS Software](https://cpplusworld.com/software) |
+| CP PLUS FAQs, including cloud/InstaOn and client-software guidance | [CP PLUS FAQ](https://cpplusworld.com/faq) |
+| CP PLUS troubleshooting knowledge base | [CP PLUS Troubleshooting](https://cpplusworld.com/Troubleshooting/1) |
+| CP PLUS manuals for DVR, NVR, and cameras | [CP PLUS User Manuals](https://cpplusworld.com/user-manual) |
+| LG webOS TV Simulator for Windows and other supported platforms | [LG Simulator Installation](https://webostv.developer.lge.com/develop/tools/simulator-installation) |
+| LG simulator development and debugging guide | [LG Simulator Development Guide](https://webostv.developer.lge.com/develop/tools/simulator-dev-guide) |
+
+## Offline-first quick start
+
+Use a host Node/npm version supported by the build tooling. Node 12 compatibility is required by the deployed service, not necessarily by every host tool.
 
 ```sh
 npm ci
@@ -26,25 +60,27 @@ npm test
 npm run configure
 ```
 
-`npm ci` installs the locked dependencies, prepares the ignored generated transport, and may require internet access. `npm test` is the offline suite: no decoder assets, cameras, recorder credentials, or device connections are required. `npm run configure` creates untracked `config.local.json` from tracked `config.example.json` and must refuse to overwrite an existing local file. Edit only `config.local.json` for your environment; never put real values into the example.
+`npm run configure` creates an untracked `config.local.json` from `config.example.json` and refuses to overwrite an existing local file. Edit only that local file for your environment:
 
-| Configuration | Fields and defaults |
-| --- | --- |
-| `recorder` | `instaOnId`, `username`, `password`: owner-supplied private values |
-| `cloud` | `host: "instaonserver.com"`, `port: 8800` |
-| `viewer` | `cameraCount: 10`, `defaultView: 10` |
-| `development` | `simulatorExecutable`, `simulatorServiceDirectory`, `webosCliDirectory`, `decoderAssetsDirectory`, `webosSdkScript`: initially empty; `simulatorDebugPort: 9224` |
-| `television` | `enabled: false`, `deviceName: "test-tv"`, `host: ""`, `sshPort: 9922`, `username: "prisoner"`, `privateKeyPath: ""` |
+```json
+{
+  "recorder": {
+    "instaOnId": "YOUR_PRIVATE_INSTAON_ID",
+    "username": "YOUR_PRIVATE_USERNAME",
+    "password": "YOUR_PRIVATE_PASSWORD"
+  },
+  "cloud": { "host": "instaonserver.com", "port": 8800 },
+  "viewer": { "cameraCount": 10, "defaultView": 10 }
+}
+```
 
-Keep machine-specific tool and asset locations in the local configuration. `television.enabled: false` is a device-tooling guard; it does not make configured simulator media playback offline. Starting playback can authenticate with the recorder.
+Never put real values in `config.example.json`, README files, issue reports, screenshots, logs, or release assets.
 
-## Simulator setup and control from Codex
+## Simulator workflow
 
-The development target is the **LG webOS TV Simulator**, sometimes called an emulator in conversation. It does not reproduce physical-TV performance or every service restriction.
-
-1. Install the LG simulator and required webOS CLI/SDK tools from their official distribution. Do not commit their installers or installation folders.
-2. Run `npm run configure`, then set the `development` paths in `config.local.json`. Select the simulator executable, this project's writable simulator service directory, CLI directory, authorized decoder asset directory, and the `webOSTV.js` library path if required by the installation. Keep the debug port at `9224` unless it conflicts. Follow the exact steps in [simulator setup](docs/SIMULATOR.md).
-3. With authorized assets and private config available, build and launch:
+1. Install the official LG webOS TV Simulator and webOS CLI/SDK tools.
+2. Configure local simulator, CLI, authorized decoder-asset, and SDK paths in `config.local.json`.
+3. Build and run the simulator checks:
 
    ```sh
    npm run build
@@ -52,30 +88,38 @@ The development target is the **LG webOS TV Simulator**, sometimes called an emu
    npm run qa:simulator
    ```
 
-4. Use the configured loopback debug endpoint for scripted inspection. Codex can run these scripts and inspect the simulator through available browser or bundled computer-use tools. If the simulator requires service registration, register only this project's staged service through the simulator's supported UI. UI-control availability depends on the Codex installation.
-5. Check focus, Enter/OK, Back 461, layout changes, enlargement/return, Fit/Fill, pause/resume, and overflow. Report whether a check used fixtures, a simulator media session, or previously collected evidence. Simulator FPS is not a TV benchmark.
+4. Validate focus, Enter/OK, Back, 4/8/10/16 layouts, enlargement, Fit/Fill, pause/resume, and overflow. Keep `television.enabled: false` during simulator-only work.
 
-Do not use TV discovery, pairing, SSH, installation, launch, or restart commands during simulator work. Keep `television.enabled` false. Do not alter recorder settings, firmware, stream parameters, or recording quality. Live simulator media sessions also require user authorization; default to offline checks when that authorization is absent.
+The simulator is not a physical-TV performance benchmark. A live simulator session can still contact the recorder, so use offline checks by default and authorize a media session explicitly when needed.
 
-## Build, package, and publication checks
+## Build, package, and privacy checks
 
 ```sh
+npm test
 npm run build
 npm run package
 npm run privacy
 ```
 
-Build and packaging need the private prerequisites above. A generated package may contain recorder secrets and must be treated as private. A privacy scan is one check, not proof that an IPK or a whole Git history is safe to publish. Review tracked files, history, release attachments, and staged outputs before publication. Never publish `config.local.json`, private packages, footage, screenshots of feeds, logs, device identifiers, or vendor decoder payloads without established rights.
+Packages can contain private configuration and must not be uploaded automatically. The privacy scan is a guardrail, not a substitute for reviewing tracked files, Git history, and release attachments.
 
-## Documentation
+## Documentation and handoff
 
 - [Stable v0.4.2 baseline and limitations](docs/STABLE_BASELINE.md)
-- [Fresh source/export verification and unrun checks](docs/VALIDATION.md)
+- [Current LLM handoff v2 — pending tasks](docs/LLM_HANDOFF_V2.md)
+- [Original handoff and preserved baseline](docs/LLM_HANDOFF.md)
 - [Architecture and component ownership](docs/ARCHITECTURE.md)
 - [Feature and activity roadmap](docs/ROADMAP.md)
-- [Next-LLM handoff and copy/paste prompt](docs/LLM_HANDOFF.md)
-- [Skills and actual upstream links](docs/SKILLS.md)
+- [Fresh source/export validation](docs/VALIDATION.md)
+- [Skills and upstream links](docs/SKILLS.md)
 - [Local config and private build setup](docs/SETUP.md)
-- [Publication and privacy checks](docs/PRIVACY.md)
-- [Licensing and excluded dependencies](docs/LICENSING.md)
+- [Publication, privacy, and licensing boundaries](docs/PRIVACY.md) · [LICENSING.md](docs/LICENSING.md)
 - [Agent working rules](AGENTS.md)
+
+## Search keywords
+
+`CP PLUS` · `CPPLUS` · `CP Plus DVR` · `CP Plus NVR` · `XVR` · `CCTV` · `IP camera` · `InstaOn` · `GCMOB` · `iCMOB` · `KVMS Pro Lite` · `Dahua` · `Dahau` (common misspelling) · `Dahua-compatible transport` · `LG webOS` · `webOS TV 23 Simulator` · `webOS DVR viewer` · `webOS NVR viewer` · `live camera wall` · `HEVC` · `RTSP` · `PTCP` · `Node.js webOS service`
+
+## License and provenance
+
+The license decision for project-owned code is pending. Do not infer a project-wide MIT license from dependency metadata. The pinned `dahua-p2p@1.0.0` dependency has conflicting provenance signals documented in [LICENSING.md](docs/LICENSING.md); compiled upstream transport and decoder payloads are not vendored.

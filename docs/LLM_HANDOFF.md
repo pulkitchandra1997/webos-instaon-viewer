@@ -1,4 +1,6 @@
-# Next-LLM handoff
+# Next-LLM handoff (v1 baseline)
+
+> The current continuation checklist is [LLM_HANDOFF_V2.md](LLM_HANDOFF_V2.md). This file is retained as the original v0.4.2 handoff record.
 
 Read [AGENTS.md](../AGENTS.md), [README.md](../README.md), [STABLE_BASELINE.md](STABLE_BASELINE.md), [ARCHITECTURE.md](ARCHITECTURE.md), then the relevant [ROADMAP.md](ROADMAP.md) item. This is the single public sanitized webOS repository. v0.4.2 is the stable personal-use feature baseline, with further work planned rather than implicitly implemented.
 
