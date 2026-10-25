@@ -16,6 +16,8 @@ for(const invalid of [
   Object.assign({},custom,{defaultView:2}),
   Object.assign({},custom,{order:[1,1,2,3]}),
   Object.assign({},custom,{labels:{'5':'outside'}}),
-  Object.assign({},custom,{ratio:'21:9'})
+  Object.assign({},custom,{ratio:'21:9'}),
+  Object.assign({},custom,{password:'secret'}),
+  Object.assign({},custom,{ip:'192.0.2.1'})
 ])assert.throws(()=>profiles.validateProfile(invalid));
 console.log('PASS versioned non-secret profile migration, validation, and export');

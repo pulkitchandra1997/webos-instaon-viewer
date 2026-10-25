@@ -1,10 +1,11 @@
 'use strict';
 
-const VIEWS=[4,8,10,16],RATIOS=['auto','8:9','4:3','16:9'],FITS=['fit','fill'];
+const VIEWS=[4,8,10,16],RATIOS=['auto','8:9','4:3','16:9'],FITS=['fit','fill'],PROFILE_FIELDS=['version','id','name','cameraCount','defaultView','labels','order','fit','ratio'];
 function fail(field){throw new Error('Invalid profile field: '+field);}
 function text(value,field){if(typeof value!=='string'||!value.trim()||value.length>64)fail(field);}
 function validateProfile(profile){
   if(!profile||typeof profile!=='object')fail('profile');
+  if(Object.keys(profile).some(key=>!PROFILE_FIELDS.includes(key)))fail('unknown');
   if(profile.version!==1)fail('version');
   if(typeof profile.id!=='string'||!/^[a-z0-9][a-z0-9_-]{0,31}$/.test(profile.id))fail('id');
   text(profile.name,'name');
@@ -25,7 +26,7 @@ function migrateConfig(config){
   validateProfile(profile);return Object.assign({},config,{profiles:[profile]});
 }
 function exportProfile(profile){
-  const safe=validateProfile(Object.assign({},profile,{username:undefined,password:undefined}));
+  const safe=validateProfile(Object.fromEntries(PROFILE_FIELDS.map(key=>[key,profile&&profile[key]])));
   return JSON.stringify(safe,null,2)+'\n';
 }
 module.exports={validateProfile,migrateConfig,exportProfile};
