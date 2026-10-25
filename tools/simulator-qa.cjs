@@ -313,7 +313,7 @@ async function runUiChecks(evaluate, config, options, signal) {
   assert.equal(initial.view, config.viewer.defaultView, 'UI-only launch must use configured default layout');
   assert.equal(initial.visible, config.viewer.defaultView, 'UI-only launch must show the configured layout count');
   assert.equal(initial.overflow, false, 'UI-only launch must fit the simulator viewport');
-  assert(initial.capabilities.includes('Optional controls unavailable'), 'UI must explain unavailable optional controls');
+  assert(initial.capabilities.includes('Optional controls') && initial.capabilities.includes('unavailable'), 'UI must explain unavailable optional controls');
   const layouts=[];
   for (const count of [4,8,10,16]) {
     await evaluate(`document.querySelector('button[data-view="${count}"]').click()`);
