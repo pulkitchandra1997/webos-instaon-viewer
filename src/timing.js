@@ -17,8 +17,9 @@
   }
   function ClockMapper(clockRate){
     if(!(clockRate>0))throw new Error('clockRate must be positive');
-    this.clockRate=clockRate;this.lastExtended=null;this.anchorRtp=null;this.anchorNtpMs=null;
+    this.clockRate=clockRate;this.maxClockJumpMs=2000;this.lastExtended=null;this.anchorRtp=null;this.anchorNtpMs=null;this.lastDiscontinuity=null;
   }
+  ClockMapper.prototype.reset=function(reason){this.lastExtended=null;this.anchorRtp=null;this.anchorNtpMs=null;this.lastDiscontinuity=reason||'reset';};
   ClockMapper.prototype.extend=function(timestamp){
     timestamp=timestamp>>>0;if(this.lastExtended===null){this.lastExtended=timestamp;return timestamp;}
     var base=this.lastExtended-(this.lastExtended%RTP_MOD),candidate=base+timestamp;
@@ -28,7 +29,10 @@
   };
   ClockMapper.prototype.senderReport=function(report){
     if(!report||!Number.isFinite(report.ntpMs))return null;
-    var extended=this.extend(report.rtpTimestamp);this.anchorRtp=extended;this.anchorNtpMs=report.ntpMs;return extended;
+    var extended=this.extend(report.rtpTimestamp),discontinuity=null;
+    if(this.anchorRtp!==null&&this.anchorNtpMs!==null){var expected=(extended-this.anchorRtp)*1000/this.clockRate,actual=report.ntpMs-this.anchorNtpMs;if(Math.abs(actual-expected)>this.maxClockJumpMs)discontinuity=actual<0?'clock-rewind':'clock-jump';}
+    if(discontinuity){this.lastDiscontinuity=discontinuity;this.anchorRtp=extended;this.anchorNtpMs=report.ntpMs;return extended;}
+    this.lastDiscontinuity=null;this.anchorRtp=extended;this.anchorNtpMs=report.ntpMs;return extended;
   };
   ClockMapper.prototype.map=function(timestamp){
     if(this.anchorRtp===null||this.anchorNtpMs===null)return null;
