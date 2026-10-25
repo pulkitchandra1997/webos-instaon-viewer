@@ -1,0 +1,7 @@
+{
+  "description": "Integrity pins only. Proprietary runtime files are NOT distributed by this repository.",
+  "assets": [
+    {"path": "module-libDecodeSDK.js", "sha256": "e4cdaeac77d5748ffefee43aa0cfcbd922621f2fe70996385cc6375e2fec7581"},
+    {"path": "module-libDecodeSDK.wasm", "sha256": "5bc669766164eea5466c0bb8cdc208918faa54bf7012a23005c5a25f9002cb6d"}
+  ]
+}

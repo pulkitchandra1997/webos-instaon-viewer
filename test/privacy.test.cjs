@@ -1,0 +1,12 @@
+'use strict';
+const assert=require('assert');
+const {scanEntry,secretVariants}=require('../tools/privacy.cjs');
+const secret='fixture-private-value-123';
+for(const variant of secretVariants([secret]))assert(scanEntry('src/example.js',Buffer.from('x='+variant),[secret]).some(x=>x.rule==='private-value'));
+for(const file of ['config.local.json','build/viewer.ipk','logs/capture.pcapng','private/key.pem','src/module-libDecodeSDK.js','src/runtime.wasm','docs/camera-screen.png','docs/photo.jpg'])assert(scanEntry(file,Buffer.from('x'),[]).some(x=>x.rule==='forbidden-path'),file);
+assert(scanEntry('src/example.js',Buffer.from('"http://'+[192,168,12,34].join('.')+'/"'),[]).some(x=>x.rule==='private-address'));
+assert(scanEntry('docs/notes.md',Buffer.from(['C:','Users','Example Owner','secret'].join('\\')),[]).some(x=>x.rule==='personal-path'));
+assert(scanEntry('notes.txt',Buffer.from(['-----BEGIN','OPENSSH','PRIVATE','KEY-----'].join(' ')),[]).length);
+assert.deepStrictEqual(scanEntry('config.example.json',Buffer.from('{"password":"REPLACE_WITH_PASSWORD"}'),[]),[]);
+assert.deepStrictEqual(scanEntry('src/icon.png',Buffer.from([137,80,78,71]),[]),[]);
+console.log('Privacy guard rejects private files, raw/encoded secrets, private addresses and personal paths.');

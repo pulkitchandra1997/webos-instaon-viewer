@@ -1,0 +1,12 @@
+'use strict';
+const assert=require('assert'),fs=require('fs');
+const layout=fs.existsSync(__dirname+'/../src/layout.js')?require('../src/layout.js'):{};
+assert.strictEqual(typeof layout.fitRect,'function','Aspect-ratio layout is missing');
+assert.deepStrictEqual(layout.fitRect(600,300,4/3,false),{width:400,height:300});
+assert.deepStrictEqual(layout.fitRect(600,300,16/9,false),{width:533,height:300});
+assert.deepStrictEqual(layout.fitRect(600,300,4/3,true),{width:600,height:450});
+assert.deepStrictEqual(layout.fitRect(0,300,4/3,false),{width:0,height:0});
+assert.strictEqual(layout.displayRatio({numerator:12,denominator:11},352,288,'auto'),4/3);
+assert.strictEqual(layout.displayRatio({numerator:1,denominator:1},960,1080,'16:9'),16/9);
+assert.strictEqual(layout.displayRatio({numerator:0,denominator:0},960,1080,'auto'),8/9);
+console.log('PASS centered Fit/Fill, anamorphic SAR, explicit display-ratio override');

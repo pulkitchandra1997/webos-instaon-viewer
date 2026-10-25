@@ -1,0 +1,15 @@
+{
+  "recorder": {"instaOnId": "REPLACE_WITH_DEVICE_ID", "username": "REPLACE_WITH_USERNAME", "password": "REPLACE_WITH_PASSWORD"},
+  "cloud": {"host": "instaonserver.com", "port": 8800},
+  "viewer": {"cameraCount": 10, "defaultView": 10},
+  "development": {
+    "simulatorExecutable": "",
+    "simulatorServiceDirectory": "",
+    "simulatorDebugPort": 9224,
+    "webosCliDirectory": "",
+    "decoderAssetsDirectory": "",
+    "webosSdkScript": ""
+  },
+  "television": {"enabled": false, "deviceName": "test-tv", "host": "", "sshPort": 9922, "username": "prisoner", "privateKeyPath": ""},
+  "privacy": {"forbiddenStrings": []}
+}

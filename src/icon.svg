@@ -1,0 +1,14 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="256" height="256" viewBox="0 0 256 256" role="img" aria-labelledby="title description">
+  <title id="title">Camera Viewer</title>
+  <desc id="description">A cyan and teal camera lens inside four rounded viewfinder corners on navy.</desc>
+  <rect x="0" y="0" width="256" height="256" fill="#102331"/>
+  <polyline points="76,54 42,54 42,86" fill="none" stroke="#3FE0E8" stroke-width="14" stroke-linecap="round" stroke-linejoin="round"/>
+  <polyline points="180,54 214,54 214,86" fill="none" stroke="#20B8AA" stroke-width="14" stroke-linecap="round" stroke-linejoin="round"/>
+  <polyline points="42,170 42,202 76,202" fill="none" stroke="#20B8AA" stroke-width="14" stroke-linecap="round" stroke-linejoin="round"/>
+  <polyline points="180,202 214,202 214,170" fill="none" stroke="#3FE0E8" stroke-width="14" stroke-linecap="round" stroke-linejoin="round"/>
+  <circle cx="128" cy="128" r="54" fill="#3FE0E8"/>
+  <circle cx="128" cy="128" r="42" fill="#102331"/>
+  <circle cx="128" cy="128" r="32" fill="#20B8AA"/>
+  <circle cx="128" cy="128" r="21" fill="#102331"/>
+  <circle cx="119" cy="119" r="7" fill="#F5FBFF"/>
+</svg>

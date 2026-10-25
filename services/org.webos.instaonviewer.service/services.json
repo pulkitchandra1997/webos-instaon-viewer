@@ -1,0 +1,5 @@
+{
+  "id": "org.webos.instaonviewer.service",
+  "description": "Private CP PLUS InstaOn client",
+  "services": [{ "name": "org.webos.instaonviewer.service", "description": "Direct camera connection" }]
+}

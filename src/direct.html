@@ -1,0 +1,14 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Camera Viewer · Direct</title><link rel="stylesheet" href="styles.css"></head>
+<body><main class="shell">
+  <header><div class="brand"><img src="icon.svg" width="56" height="56" alt=""><div><h1>Camera Viewer</h1><span>Direct InstaOn · standalone</span></div></div><output id="status">Starting</output></header>
+  <nav aria-label="Live view controls"><span>View</span><button data-view="4">4</button><button data-view="8">8</button><button data-view="10" class="active">10</button><button data-view="16">16</button><button id="settings">Settings</button><button id="toggle">Pause all</button></nav>
+  <p id="message" role="status">Starting the on-TV service…</p>
+  <section id="grid" data-view="10" aria-label="Live camera channels"></section>
+  <footer id="summary">Select a camera to enlarge it. Back returns to the grid.</footer>
+  <aside id="panel" hidden><h2>Live view settings</h2>
+    <label>Image framing <select id="fit"><option value="fit">Fit — full image</option><option value="fill">Fill — cropped</option></select></label>
+    <label>Display ratio <select id="ratio"><option value="auto">Source metadata</option><option value="8:9">1080N (8:9)</option><option value="4:3">4:3</option><option value="16:9">16:9</option></select></label>
+    <p>SD for the grid; HD automatically when a camera is enlarged. Recorder settings remain unchanged.</p><button id="dismiss">Close settings</button>
+  </aside>
+</main><script src="webOSTV.js"></script><script src="viewer-profile.js"></script><script src="layout.js"></script><script src="render.js"></script><script src="index.js"></script></body></html>

@@ -1,0 +1,20 @@
+{
+  "name": "webos-instaon-viewer",
+  "version": "0.4.2",
+  "private": true,
+  "description": "Standalone personal webOS camera viewer, source-only distribution",
+  "engines": {"node": ">=22"},
+  "scripts": {
+    "prepare": "node tools/build-transport.cjs",
+    "configure": "node tools/configure.cjs",
+    "test": "node tools/test.cjs",
+    "build": "node tools/build.cjs",
+    "package": "node tools/package.cjs",
+    "simulator": "node tools/simulator.cjs",
+    "qa:simulator": "node tools/simulator-qa.cjs",
+    "privacy": "node tools/privacy.cjs",
+    "privacy:history": "node tools/privacy.cjs --history"
+  },
+  "dependencies": {"dahua-p2p": "1.0.0", "ws": "8.22.0"},
+  "devDependencies": {"esbuild": "0.25.12"}
+}

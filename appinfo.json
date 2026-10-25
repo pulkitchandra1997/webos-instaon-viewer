@@ -1,0 +1,5 @@
+{
+  "id": "org.webos.instaonviewer", "version": "0.4.2", "vendor": "webOS Viewer Contributors",
+  "type": "web", "main": "index.html", "title": "Camera Viewer", "icon": "icon.png",
+  "largeIcon": "largeIcon.png", "iconColor": "#102331", "requiredACG": [], "uiRevision": 2, "resolution": "1920x1080"
+}
