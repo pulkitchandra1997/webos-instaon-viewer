@@ -25,6 +25,6 @@ try{
   fs.writeFileSync(path.join(tmp,'config.local.json'),'{fixture-password-123');
   assert.throws(()=>loadConfig(tmp),e=>!e.message.includes('fixture-password-123'));
   fs.writeFileSync(path.join(tmp,'config.local.json'),JSON.stringify(fixture));
-  assert.strictEqual(loadConfig(tmp).recorder.username,'fixture-user');
+  const loaded=loadConfig(tmp);assert.strictEqual(loaded.recorder.username,'fixture-user');assert.deepStrictEqual(loaded.profiles[0],{version:1,id:'default',name:'Default',cameraCount:10,defaultView:10,labels:{},order:[1,2,3,4,5,6,7,8,9,10],fit:'fit',ratio:'auto'});
 }finally{fs.rmSync(tmp,{recursive:true,force:true});}
 console.log('Config validation, derived service config and safe public profile passed.');

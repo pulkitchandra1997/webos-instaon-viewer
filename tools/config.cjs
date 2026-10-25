@@ -1,6 +1,6 @@
 'use strict';
 const fs=require('fs'),path=require('path');
-const {validateProfile}=require('./profiles.cjs');
+const {validateProfile,migrateConfig}=require('./profiles.cjs');
 function invalid(field){throw new Error('Invalid configuration field: '+field);}
 function text(value,field){if(typeof value!=='string'||!value.trim()||value.startsWith('REPLACE_'))invalid(field);}
 function port(value,field){if(!Number.isInteger(value)||value<1||value>65535)invalid(field);}
@@ -24,7 +24,7 @@ function loadConfig(root,options){
   let c;
   try{c=JSON.parse(fs.readFileSync(path.join(root,'config.local.json'),'utf8').replace(/^\uFEFF/,''));}
   catch(error){throw new Error('Cannot read config.local.json; run npm run configure and edit it locally.');}
-  return validateConfig(c,options);
+  return migrateConfig(validateConfig(c,options));
 }
 function serviceConfig(c){return {deviceid:c.recorder.instaOnId,username:c.recorder.username,password:c.recorder.password,cloud:{host:c.cloud.host,port:c.cloud.port},cameraCount:c.viewer.cameraCount};}
 function publicProfile(c){const profile={cameraCount:c.viewer.cameraCount,defaultView:c.viewer.defaultView};if(Array.isArray(c.profiles))profile.profiles=c.profiles.map(p=>({version:p.version,id:p.id,name:p.name,cameraCount:p.cameraCount,defaultView:p.defaultView,labels:p.labels,order:p.order,fit:p.fit,ratio:p.ratio}));return profile;}

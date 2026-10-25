@@ -18,4 +18,4 @@ Example:
 }
 ```
 
-Profile validation and redacted export are implemented in `tools/profiles.cjs` and tested offline. The runtime now exposes the configured non-secret profiles in the TV UI and applies the selected profile's camera count, ordering, labels, preferred layout, fit mode, and display ratio. Selection is persisted locally by profile ID. The runtime still uses the existing single-recorder connection contract; profile selection does not switch recorder credentials.
+Profile validation, migration from the original single-profile config, and redacted export are implemented in `tools/profiles.cjs` and tested offline. `loadConfig` now materializes a deterministic `default` profile when `config.local.json` has no profiles. The runtime exposes configured non-secret profiles in the TV UI and applies the selected profile's camera count, ordering, labels, preferred layout, fit mode, and display ratio. Selection is persisted locally by profile ID. The runtime still uses the existing single-recorder connection contract; profile selection does not switch recorder credentials.
